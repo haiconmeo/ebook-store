@@ -8,98 +8,119 @@ import {
   useBreakpointValue,
   Code,
   Button,
-  Flex,
+  Card, CardHeader, CardBody, CardFooter,
   Link as ChakraLink,
-  Stack,
+  Input,
+  VStack,
+  SimpleGrid,
+  Flex,
 } from "@chakra-ui/react";
-import React from "react";
-import { AiFillGithub } from "react-icons/ai";
+
+import React, { useState } from "react";
 
 import MotionBox from "components/motion/MotionBox";
 import Main from "components/wrapper/Main";
 
-const Index = () => {
-  const { colorMode } = useColorMode();
-  const textSize = useBreakpointValue({
-    base: "xs",
-    sm: "md",
+const simulatedEbooks = [
+  { id: 1, title: "Ebook 1", description: "Description for Ebook 1", imageUrl: "/ebook1.jpg" },
+  { id: 2, title: "Ebook 2", description: "Description for Ebook 2", imageUrl: "/ebook2.jpg" },
+  { id: 3, title: "Ebook 3", description: "Description for Ebook 3", imageUrl: "/ebook3.jpg" },
+  { id: 4, title: "Ebook 4", description: "Description for Ebook 4", imageUrl: "/ebook4.jpg" },
+  { id: 5, title: "Ebook 5", description: "Description for Ebook 5", imageUrl: "/ebook5.jpg" },
+  { id: 6, title: "Ebook 6", description: "Description for Ebook 6", imageUrl: "/ebook6.jpg" },
+  { id: 7, title: "Ebook 7", description: "Description for Ebook 7", imageUrl: "/ebook7.jpg" },
+  { id: 8, title: "Ebook 8", description: "Description for Ebook 8", imageUrl: "/ebook8.jpg" },
+  { id: 9, title: "Ebook 9", description: "Description for Ebook 9", imageUrl: "/ebook9.jpg" },
+  { id: 10, title: "Ebook 10", description: "Description for Ebook 10", imageUrl: "/ebook10.jpg" },
+  { id: 11, title: "Ebook 11", description: "Description for Ebook 11", imageUrl: "/ebook11.jpg" },
+  { id: 12, title: "Ebook 12", description: "Description for Ebook 12", imageUrl: "/ebook12.jpg" },
+];
+const fetchEbooks = (page: number, pageSize: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const data = simulatedEbooks.slice(startIndex, endIndex);
+      resolve(data);
+    }, 500); // Simulated delay of 500ms
   });
+};
+const Index = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6; // Number of items per page
+  const [ebooks, setEbooks] = useState([]);
+
+  // Function to fetch eBooks based on current page
+  const loadEbooks = async () => {
+    const data = await fetchEbooks(currentPage, pageSize);
+    setEbooks(data);
+  };
+
+  // Load eBooks initially
+  useState(() => {
+    loadEbooks();
+  }, [currentPage]);
+
+  // Handle pagination
+  const nextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  // Filter eBooks based on search term
+  const filteredEbooks = ebooks.filter((ebook) =>
+    ebook.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   return (
     <Main>
       <Heading as="h2">Hello World!</Heading>
 
-      <Box
-        bg={colorMode === "light" ? "gray.300" : "gray.500"}
-        p={2}
-        borderRadius={4}
-      >
-        <Text fontSize={textSize}>
-          This is an example text. This project is initiated using Next JS and
-          Chakra UI.
-        </Text>
-      </Box>
-      <Center>
-        <MotionBox
-          animate={{ y: 20, scale: 0.9 }}
-          transition={{ repeat: Infinity, duration: 3, repeatType: "reverse" }}
-          marginY={8}
-          maxWidth={[240, 320]}
-        >
-          <Image
-            alt="Sample Image"
-            boxSize={["100px", "150px"]}
-            objectFit="cover"
-            src="https://assets.vercel.com/image/upload/v1607554385/repositories/next-js/next-logo.png"
-          />
-        </MotionBox>
-      </Center>
-      <Stack alignItems="center" justifyContent="center">
-        <Code fontSize={textSize}>
-          npx degit yehezkielgunawan/yehez-nextchakra-starter{" "}
-          {"<YOUR_APP_NAME>"}
-        </Code>
-        <Text>OR</Text>
-        <Code fontSize={textSize}>
-          npx create-next-app --example
-          https://github.com/yehezkielgunawan/yehez-nextchakra-starter{" "}
-          {"<YOUR_APP_NAME>"}
-        </Code>
-      </Stack>
-      <Button
-        as="a"
-        href="https://github.com/yehezkielgunawan/yehez-nextchakra-starter/generate"
-        size="sm"
-        colorScheme="teal"
-        variant="outline"
-        target="_blank"
-      >
-        Use This Template
-      </Button>
-      <Flex align="center" gridGap={3} justify="center" wrap="wrap">
-        <Button
-          as="a"
-          href="https://github.com/yehezkielgunawan/yehez-nextchakra-starter"
-          leftIcon={<AiFillGithub />}
-          target="_blank"
-        >
-          Open in Github
-        </Button>
-        <ChakraLink
-          isExternal
-          href="https://vercel.com/import/git?s=https://github.com/yehezkielgunawan/yehez-nextchakra-starter"
-        >
-          <Image src="https://vercel.com/button" alt="Vercel deploy button" />
-        </ChakraLink>
-        <ChakraLink
-          isExternal
-          href="https://app.netlify.com/start/deploy?repository=https://github.com/yehezkielgunawan/yehez-nextchakra-starter"
-        >
-          <Image
-            src="https://www.netlify.com/img/deploy/button.svg"
-            alt="Netlify deploy button"
-          />
-        </ChakraLink>
-      </Flex>
+      <Box p={8}>
+      <Heading as="h1" mb={8}>
+        E-Book Library
+      </Heading>
+      <Input
+        placeholder="Search eBooks..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        mb={4}
+      />
+      <VStack align="start">
+        <Heading as="h2" size="md" mb={2}>
+          List of eBooks:
+        </Heading>
+        <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+          {filteredEbooks.map((ebook) => (
+            <Flex
+              key={ebook.id}
+              p={4}
+              borderWidth="1px"
+              borderRadius="md"
+              flexDirection="column"
+              alignItems="start"
+              boxShadow="md"
+            >
+              <Image src={ebook.imageUrl} alt={ebook.title} mb={4} borderRadius="md" />
+              <Text fontSize="lg" fontWeight="bold" mb={2}>{ebook.title}</Text>
+              <Text>{ebook.description}</Text>
+            </Flex>
+          ))}
+        </SimpleGrid>
+        {/* Pagination controls */}
+        <Flex mt={4} justify="center">
+          <Button onClick={prevPage} mr={2} disabled={currentPage === 1}>
+            Previous
+          </Button>
+          <Button onClick={nextPage} ml={2}>
+            Next
+          </Button>
+        </Flex>
+      </VStack>
+    </Box>
     </Main>
   );
 };

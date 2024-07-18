@@ -28,13 +28,11 @@ const HeaderComponent = () => {
         px={[3, 1]}
       >
         <Text as="a" href="/" fontSize="lg">
-          <b>yehez-nextjs-chakra-starter</b>
+          <b>Ebook</b>
         </Text>
 
         <Flex gridGap={3} align="center">
-          <Button leftIcon={<FaGithub />} variant="ghost" size="sm">
-            Open in Github
-          </Button>
+
 
           <DarkModeSwitch />
         </Flex>
